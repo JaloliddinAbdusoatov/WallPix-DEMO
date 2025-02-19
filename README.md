@@ -1,0 +1,2 @@
+# WallPix-DEMO
+WallPi DEMO (JDU PROJECT)
