@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WallPix</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="content" class="hidden">
+        <div id="header">
+            <div class="logo"><a href="/">WallPix</a></div>
+            <div id="form">
+                <form action="/search/?q=" id="search">
+                    <input type="text" aria-label="Search" placeholder="Search" name="text" size="30" maxlength="90"
+                        class="field" id="search-input" autocomplete="off" required>
+                    <input type="submit" value="Search" class="button">
+                </form>
+            </div>
+
+
+            <div class="sec-center">
+                <input class="dropdown" type="checkbox" id="dropdown" name="dropdown" aria-label="Categories">
+                <label class="for-dropdown" for="dropdown">
+                    <span class="dropdown">Categories</span>
+                    <i class="fas fa-angle-down"></i>
+                </label>
+                <div class="section-dropdown">
+                    <a href="#" data-category="all" class="filter-btn">All</a>
+                    <a href="#" data-category="nature" class="filter-btn">Nature</a>
+                    <a href="#" data-category="architecture" class="filter-btn">Architecture</a>
+                    <a href="#" data-category="people" class="filter-btn">People</a>
+                    <a href="#" data-category="abstract" class="filter-btn">Abstract</a>
+                    <a href="#" data-category="animals" class="filter-btn">Animals</a>
+                    <a href="#" data-category="technology" class="filter-btn">Technology</a>
+                    <a href="#" data-category="food" class="filter-btn">Food</a>
+                    <a href="#" data-category="sports" class="filter-btn">Sports</a>
+                    <a href="#" data-category="cars" class="filter-btn">Cars</a>
+                    <a href="#" data-category="fashion" class="filter-btn">Fashion</a>
+                    <a href="#" data-category="others" class="filter-btn">Others</a>
+                </div>
+            </div>
+        </div>
+        <section class="gallery_section">
+            <div id="gallery_section">
+                <div class="grid-container" id="image-gallery"></div>
+                <button id="load-more">Load More</button>
+            </div>
+        </section>
+
+
+
+        
+        <script>
+            window.addEventListener("load", function () {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("content").classList.remove("hidden");
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const galleryContainer = document.getElementById('image-gallery');
+                const loadMoreBtn = document.getElementById("load-more");
+                let currentSearch = "";
+                let page = 1;
+
+                function fetchAndDisplayImages(searchTerm = "", isLoadMore = false) {
+                    const accessKey = 'qRkzT2XtV_MdPzQVPT68f8-jGTfN0stNnHDsz1fvuR8';
+                    const apiUrl = searchTerm && searchTerm !== "all" ?
+                        `https://api.unsplash.com/search/photos?client_id=${accessKey}&query=${searchTerm}&page=${page}&per_page=16` :
+                        `https://api.unsplash.com/photos?client_id=${accessKey}&page=${page}&per_page=16`;
+
+                    if (!isLoadMore) {
+                        galleryContainer.innerHTML = "";
+                        page = 1;
+                    }
+
+                    fetch(apiUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            const photos = searchTerm && searchTerm !== "all" ? data.results : data;
+                            photos.forEach(photo => {
+                                const imageUrl = photo.urls.regular;
+                                const imageElement = document.createElement('div');
+                                imageElement.classList.add('grid-item');
+                                imageElement.style.backgroundImage = `url(${imageUrl})`;
+                                imageElement.dataset.img = imageUrl;
+                                galleryContainer.appendChild(imageElement);
+                            });
+                            
+                        })
+                        .catch(error => console.error('Error fetching images:', error));
+                }
+
+                fetchAndDisplayImages();
+
+                document.querySelectorAll('.filter-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        currentSearch = button.dataset.category;
+                        page = 1;
+                        fetchAndDisplayImages(currentSearch);
+                    });
+                });
+
+                loadMoreBtn.addEventListener("click", function () {
+                    page++;
+                    fetchAndDisplayImages(currentSearch, true);
+                });
+            });
+
+
+        </script>
+
+
+        <div class="footer">
+            <p>&copy; 2025 WallPix. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#gallery_section">Services</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <script src="./main.js"></script>
+</body>
+
+</html>
